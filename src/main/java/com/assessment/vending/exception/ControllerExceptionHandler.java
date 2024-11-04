@@ -33,7 +33,7 @@ public class ControllerExceptionHandler extends ResponseEntityExceptionHandler {
 
     @ExceptionHandler(VendingMachineException.class)
     public final ResponseEntity<Object> handleServiceException(VendingMachineException ex, WebRequest request) {
-        log.error("BookStoreException :: ", ex);
+        log.error("VendingMachineException :: ", ex);
         return ResponseEntity.ok(new BaseStandardResponse<>(ex.getResponseCode()));
     }
 
