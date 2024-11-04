@@ -1,0 +1,24 @@
+spring:
+  profiles:
+    active: dev
+
+  application:
+    name: bookstore
+
+  mvc:
+    pathmatch:
+      matching-strategy: ant-path-matcher
+
+logging:
+  file:
+    name: logs/application.log
+
+  logback:
+    rollingpolicy:
+      max-history: 30
+      max-file-size: 20MB
+
+  level:
+    org.springframework.web: INFO
+    org.hibernate: ERROR
+    com.assessment.bookstore: INFO
