@@ -20,7 +20,7 @@ import java.util.List;
 import java.util.Map;
 
 import static com.assessment.vending.util.AppConstants.*;
-import static com.assessment.vending.util.ResponseCode.SUCCESS;
+import static com.assessment.vending.util.ResponseCode.*;
 import static java.util.Objects.isNull;
 
 @Slf4j
@@ -49,7 +49,7 @@ public class BuyerService {
     }
 
     @Transactional
-    public BaseResponse buy(BuyRequest request, String username) {
+    public BaseStandardResponse<? extends Object> buy(BuyRequest request, String username) {
         log.info("Buy request = {} :: username = {}", request, username);
         BaseStandardResponse<UserEntity> userEntityBaseStandardResponse = userService.getUser(username);
         if (!SUCCESS.getCode().equals(userEntityBaseStandardResponse.getResponseCode())) {
@@ -91,9 +91,21 @@ public class BuyerService {
                                 productEntity.getName(), request.getQuantity())));
             } else {
                 log.info("Not enough quantity for purchase");
+                return new BaseStandardResponse<>(OUT_OF_STOCK,
+                        PurchaseResponse.builder()
+                                .totalSpent(history.get(username))
+                                .purchasedProduct(productEntity)
+                                .change(change)
+                                .build());
             }
         } else {
             log.info("Not enough balance for purchase");
+            return new BaseStandardResponse<>(INSUFFICIENT_FUNDS,
+                    PurchaseResponse.builder()
+                            .totalSpent(history.get(username))
+                            .purchasedProduct(productEntity)
+                            .change(change)
+                            .build());
         }
 
         log.info("Purchase finished");

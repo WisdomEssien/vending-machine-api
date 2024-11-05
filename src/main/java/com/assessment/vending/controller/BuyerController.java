@@ -39,7 +39,7 @@ public class BuyerController {
     }
 
     @PostMapping(BUY)
-    public ResponseEntity<BaseResponse> buy(@Valid @RequestBody BuyRequest request,
+    public ResponseEntity<BaseStandardResponse> buy(@Valid @RequestBody BuyRequest request,
                                             @AuthenticationPrincipal UserDetails userDetails) {
         return ResponseEntity.ok(buyerService.buy(request, userDetails.getUsername()));
     }

@@ -12,7 +12,7 @@ public enum ResponseCode {
     UNABLE_TO_LOCATE_RECORD("02", "Cannot Locate Record"),
     GENERIC_ERROR("03", "Something went wrong while trying to process your request"),
     SAVE_TO_DATABASE_ERROR("04", "Error Occurred While Saving To The Database"),
-    WEBSERVICE_CALL_FAILED("05", "API call failed"),
+    INSUFFICIENT_FUNDS("05", "Insufficient funds"),
     VALIDATION_ERROR("06", "Validation Error"),
     OUT_OF_STOCK("07", "Available quantity is less than what is requested");
 
