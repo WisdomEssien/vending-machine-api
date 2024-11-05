@@ -18,5 +18,8 @@ public class AppConstants {
     public static final String EM_SAVING_TO_DATABASE = "Error Occurred while saving to the database \n";
 
     public static final int[] DENOMINATIONS = {1000, 500, 200, 100, 50};
+    public static final String PURCHASE_NOTIFICATION_QUEUE = "purchaseNotificationQueue";
+    public static final String EMAIL_TEMPLATE = "You just purchased product with the following details \n" +
+            " productId: %d \n product name: %s \n quantity purchased: %d";
 
 }

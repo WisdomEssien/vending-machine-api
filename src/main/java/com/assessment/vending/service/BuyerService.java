@@ -2,16 +2,14 @@ package com.assessment.vending.service;
 
 import com.assessment.vending.database.entity.ProductEntity;
 import com.assessment.vending.database.entity.UserEntity;
-import com.assessment.vending.dto.request.BuyRequest;
-import com.assessment.vending.dto.request.DepositRequest;
-import com.assessment.vending.dto.request.ProductRequest;
-import com.assessment.vending.dto.request.UserRequest;
+import com.assessment.vending.dto.request.*;
 import com.assessment.vending.dto.response.BaseResponse;
 import com.assessment.vending.dto.response.BaseStandardResponse;
 import com.assessment.vending.dto.response.PurchaseResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
+import org.springframework.jms.core.JmsTemplate;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -21,7 +19,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static com.assessment.vending.util.AppConstants.DENOMINATIONS;
+import static com.assessment.vending.util.AppConstants.*;
 import static com.assessment.vending.util.ResponseCode.SUCCESS;
 import static java.util.Objects.isNull;
 
@@ -32,6 +30,7 @@ public class BuyerService {
 
     private final UserService userService;
     private final ProductService productService;
+    private final JmsTemplate jmsTemplate;
 
     private final Map<String, Integer> history = new HashMap<>();
 
@@ -86,6 +85,10 @@ public class BuyerService {
                 history.put(username,  previousBalance + newBalance);
 
                 change = splitAmount(newBalance);
+
+                sendPurchaseNotification(new EmailDto(userRequest.getEmail(),
+                        String.format(EMAIL_TEMPLATE, request.getProductId(),
+                                productEntity.getName(), request.getQuantity())));
             } else {
                 log.info("Not enough quantity for purchase");
             }
@@ -127,6 +130,10 @@ public class BuyerService {
             }
         }
         return result;
+    }
+
+    private void sendPurchaseNotification(EmailDto emailDto) {
+        jmsTemplate.convertAndSend(PURCHASE_NOTIFICATION_QUEUE, emailDto);
     }
 
 }

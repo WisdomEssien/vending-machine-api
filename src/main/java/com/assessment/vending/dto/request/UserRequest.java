@@ -27,10 +27,8 @@ public class UserRequest {
     private String password;
 
     @NotBlank(message = "email is required")
-    @Email
-//    @Email(regexp = "[a-z0-9._%+-]+@[a-z0-9.-]+\\.[a-z]{2,3}",
-//            flags = Pattern.Flag.CASE_INSENSITIVE,
-//            message = "invalid email provided")
+    @Email(regexp = "[a-z0-9._%+-]+@[a-z0-9.-]+\\.[a-z]{2,3}",
+            flags = Pattern.Flag.CASE_INSENSITIVE, message = "invalid email provided")
     private String email;
 
     private int balance;
