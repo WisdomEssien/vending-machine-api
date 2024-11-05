@@ -16,8 +16,8 @@ public class UserRequest {
     @Size(max = 50, message = "firstname should be 50 characters or less")
     private String firstname;
 
-    @NotBlank(message = "firstname is required")
-    @Size(max = 50, message = "firstname should be 50 characters or less")
+    @NotBlank(message = "lastname is required")
+    @Size(max = 50, message = "lastname should be 50 characters or less")
     private String lastname;
 
     @NotBlank(message = "username is required")
