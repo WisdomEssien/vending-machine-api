@@ -10,6 +10,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 
+import static com.assessment.vending.util.AppConstants.ONE_PRODUCT_URL;
 import static com.assessment.vending.util.AppConstants.PRODUCTS;
 import static org.springframework.util.StringUtils.hasText;
 
@@ -26,7 +27,7 @@ public class ProductController {
         return productService.createProduct(request);
     }
 
-    @GetMapping({"", "/{productName}"})
+    @GetMapping({"", ONE_PRODUCT_URL})
     public BaseResponse readProduct(@PathVariable(required = false) String productName){
         return hasText(productName) ? productService.getProduct(productName) : productService.getProducts();
     }

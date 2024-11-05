@@ -6,7 +6,7 @@ import lombok.ToString;
 
 @Entity
 @Data
-@Table(name = "user")
+@Table(name = "my_user")
 public class UserEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

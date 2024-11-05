@@ -5,7 +5,6 @@ import com.assessment.vending.database.repository.UserRepository;
 import com.assessment.vending.dto.request.UserRequest;
 import com.assessment.vending.dto.response.BaseCollectionResponse;
 import com.assessment.vending.dto.response.BaseStandardResponse;
-import com.assessment.vending.exception.VendingMachineException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
