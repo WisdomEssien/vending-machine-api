@@ -8,10 +8,15 @@ import com.assessment.vending.service.ProductService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import static com.assessment.vending.util.AppConstants.ONE_PRODUCT_URL;
 import static com.assessment.vending.util.AppConstants.PRODUCTS;
+import static com.assessment.vending.util.ResponseCode.VALIDATION_ERROR;
+import static java.util.Objects.isNull;
+import static java.util.Objects.nonNull;
 import static org.springframework.util.StringUtils.hasText;
 
 @Slf4j
@@ -28,17 +33,21 @@ public class ProductController {
     }
 
     @GetMapping({"", ONE_PRODUCT_URL})
-    public BaseResponse readProduct(@PathVariable(required = false) String productName){
-        return hasText(productName) ? productService.getProduct(productName) : productService.getProducts();
+    public BaseResponse readProduct(@PathVariable(required = false) Long productID){
+        return nonNull(productID) ? productService.getProduct(productID) : productService.getProducts();
     }
 
     @PutMapping
-    public BaseStandardResponse<ProductEntity> updateProduct(@Valid @RequestBody ProductRequest request){
-        return productService.updateProduct(request);
+    public ResponseEntity<Object> updateProduct(@Valid @RequestBody ProductRequest request){
+        if(isNull(request.getProductId())) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(new BaseStandardResponse<>(VALIDATION_ERROR, "productId is required"));
+        }
+        return ResponseEntity.ok(productService.updateProduct(request));
     }
 
-    @DeleteMapping("/{productName}")
-    public BaseStandardResponse<ProductEntity> deleteProduct(@PathVariable String productName){
-        return productService.deleteProduct(productName);
+    @DeleteMapping(ONE_PRODUCT_URL)
+    public BaseStandardResponse<ProductEntity> deleteProduct(@PathVariable Long productID){
+        return productService.deleteProduct(productID);
     }
 }

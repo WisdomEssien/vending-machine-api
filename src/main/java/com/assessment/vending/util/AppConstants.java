@@ -5,7 +5,7 @@ public class AppConstants {
     public static final String API_VERSION_ONE = "/api/v1";
     public static final String USERS = API_VERSION_ONE + "/users";
     public static final String PRODUCTS = API_VERSION_ONE + "/products";
-    public static final String ONE_PRODUCT_URL = PRODUCTS + "/{productName}";
+    public static final String ONE_PRODUCT_URL = PRODUCTS + "/{productID}";
 
     public static final String DEPOSIT = API_VERSION_ONE + "/deposit";
     public static final String BUY = API_VERSION_ONE + "/buy";

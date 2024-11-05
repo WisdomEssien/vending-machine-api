@@ -1,5 +1,6 @@
 package com.assessment.vending.dto.request;
 
+import com.fasterxml.jackson.annotation.JsonAlias;
 import jakarta.validation.constraints.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -10,8 +11,11 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class ProductRequest {
 
-    @NotBlank(message = "[product]name is required")
-    @Size(max = 50, message = "[product]name should be 50 characters or less")
+    private Long productId;
+
+    @NotBlank(message = "[productName, name] is required")
+    @Size(max = 50, message = "[productName, name] should be 50 characters or less")
+    @JsonAlias("productName")
     private String name;
 
     @Min(value = 1, message = "quantity should not be less than 1")

@@ -42,10 +42,10 @@ public class ProductService {
     }
 
     public BaseStandardResponse<ProductEntity> updateProduct(ProductRequest request) {
-        log.info("Updating existing product with name {}", request.getName());
-        Optional<ProductEntity> optionalProductEntity = productRepository.findByName(request.getName());
+        log.info("Updating existing product with ID {}", request.getProductId());
+        Optional<ProductEntity> optionalProductEntity = productRepository.findById(request.getProductId());
         if (optionalProductEntity.isEmpty()) {
-            log.info("Product name, {}, is not found", request.getName());
+            log.info("Product name, {}, and ID {} is not found", request.getName(), request.getProductId());
             return new BaseStandardResponse<>(UNABLE_TO_LOCATE_RECORD);
         }
 
@@ -69,21 +69,22 @@ public class ProductService {
         return new BaseCollectionResponse<>(productRepository.findAll());
     }
 
-    public BaseStandardResponse<ProductEntity> getProduct(String productName) {
-        log.info("Get product with name {}", productName);
-        Optional<ProductEntity> optionalProductEntity = productRepository.findByName(productName);
+    public BaseStandardResponse<ProductEntity> getProduct(Long productID) {
+        log.info("Get product with ID {}", productID);
+        Optional<ProductEntity> optionalProductEntity = productRepository.findById(productID);
         return optionalProductEntity
                 .map(BaseStandardResponse::new)
                 .orElseGet(() -> new BaseStandardResponse<>(UNABLE_TO_LOCATE_RECORD));
     }
 
-    public BaseStandardResponse<ProductEntity> deleteProduct(String productName) {
-        Optional<ProductEntity> optionalProductEntity = productRepository.findByName(productName);
+    public BaseStandardResponse<ProductEntity> deleteProduct(Long productID) {
+        Optional<ProductEntity> optionalProductEntity = productRepository.findById(productID);
         if (optionalProductEntity.isEmpty()) {
+            log.info("Product with ID {}, is not found", productID);
             return new BaseStandardResponse<>(UNABLE_TO_LOCATE_RECORD);
         }
         productRepository.deleteById(optionalProductEntity.get().getId());
-        log.info("Deleted product with name {}", productName);
+        log.info("Deleted product with ID {}", productID);
         return new BaseStandardResponse<>(SUCCESS);
     }
 
