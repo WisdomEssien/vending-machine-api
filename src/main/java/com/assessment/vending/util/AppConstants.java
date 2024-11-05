@@ -17,4 +17,6 @@ public class AppConstants {
 
     public static final String EM_SAVING_TO_DATABASE = "Error Occurred while saving to the database \n";
 
+    public static final int[] DENOMINATIONS = {1000, 500, 200, 100, 50};
+
 }

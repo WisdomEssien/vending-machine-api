@@ -8,6 +8,7 @@ import com.assessment.vending.dto.request.ProductRequest;
 import com.assessment.vending.dto.request.UserRequest;
 import com.assessment.vending.dto.response.BaseResponse;
 import com.assessment.vending.dto.response.BaseStandardResponse;
+import com.assessment.vending.dto.response.PurchaseResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
@@ -15,7 +16,14 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import static com.assessment.vending.util.AppConstants.DENOMINATIONS;
 import static com.assessment.vending.util.ResponseCode.SUCCESS;
+import static java.util.Objects.isNull;
 
 @Slf4j
 @Service
@@ -24,6 +32,8 @@ public class BuyerService {
 
     private final UserService userService;
     private final ProductService productService;
+
+    private final Map<String, Integer> history = new HashMap<>();
 
     public BaseResponse deposit(DepositRequest request) {
         log.info("Deposit request :: {}", request);
@@ -56,22 +66,41 @@ public class BuyerService {
         BeanUtils.copyProperties(userEntityBaseStandardResponse.getData(), userRequest);
 
         ProductRequest productRequest = new ProductRequest();
-        BeanUtils.copyProperties(productEntityBaseStandardResponse.getData(), productRequest);
+        ProductEntity productEntity = productEntityBaseStandardResponse.getData();
+        BeanUtils.copyProperties(productEntity, productRequest);
 
+        List<Integer> change = new ArrayList<>();
         if(userRequest.getBalance() >= productRequest.getPrice()) {
-            log.info("Enough balance for purchase");
             if(request.getQuantity() <= productRequest.getQuantity()) {
-                log.info("Enough quantity for purchase");
 
+                //Update user balance
+                int newBalance = userRequest.getBalance() - productRequest.getPrice();
+                userRequest.setBalance(newBalance);
+                userService.updateUser(userRequest);
+
+                //Update product quantity
+                productRequest.setQuantity(productRequest.getQuantity() - request.getQuantity());
+                productService.updateProduct(productRequest);
+
+                int previousBalance = isNull(history.get(username)) ? 0 : history.get(username);
+                history.put(username,  previousBalance + newBalance);
+
+                change = splitAmount(newBalance);
+            } else {
+                log.info("Not enough quantity for purchase");
             }
-
+        } else {
+            log.info("Not enough balance for purchase");
         }
-        userRequest.setBalance(userRequest.getBalance() - productRequest.getPrice());
-        log.info("New balance = {}", userRequest.getBalance());
-        return userService.updateUser(userRequest);
 
-        log.info("Deposit request :: {}", request);
-        return userEntityBaseStandardResponse;
+        log.info("Purchase finished");
+        return new BaseStandardResponse<>(
+                PurchaseResponse.builder()
+                        .totalSpent(history.get(username))
+                        .purchasedProduct(productEntity)
+                        .change(change)
+                        .build()
+        );
     }
 
     public BaseResponse resetBalance(String username) {
@@ -84,6 +113,20 @@ public class BuyerService {
             return userService.updateUser(userRequest);
         }
         return userEntityBaseStandardResponse;
+    }
+
+    private List<Integer> splitAmount(int amount) {
+        List<Integer> result = new ArrayList<>();
+
+        int remainingAmount = amount;
+        for (int denomination : DENOMINATIONS) {
+            int count = remainingAmount / denomination;
+            while (count > 0) {
+                result.add(denomination);
+                count--;
+            }
+        }
+        return result;
     }
 
 }

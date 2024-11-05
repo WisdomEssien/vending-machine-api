@@ -30,7 +30,7 @@ public class BuyerController {
     @PostMapping(DEPOSIT)
     public ResponseEntity<Object> deposit(@Valid @RequestBody DepositRequest request,
                                           @AuthenticationPrincipal UserDetails userDetails) {
-        if (Arrays.asList(50, 100, 200, 500, 1000).contains(request.getAmount())) {
+        if (Arrays.asList(DENOMINATIONS).contains(request.getAmount())) {
             request.setUsername(isNull(request.getUsername()) ? userDetails.getUsername() : request.getUsername());
             return ResponseEntity.ok(buyerService.deposit(request));
         }
